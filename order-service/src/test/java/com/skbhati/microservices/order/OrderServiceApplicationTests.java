@@ -1,6 +1,8 @@
 package com.skbhati.microservices.order;
 
+import com.skbhati.microservices.order.client.InventoryClient;
 import com.skbhati.microservices.order.dto.OrderResponse;
+import com.skbhati.microservices.order.stubs.InventoryClientStub;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,12 +13,17 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.context.annotation.Import;
 import org.testcontainers.mysql.MySQLContainer;
 import org.testcontainers.shaded.org.hamcrest.Matchers;
+import org.wiremock.spring.ConfigureWireMock;
+import org.wiremock.spring.EnableWireMock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@EnableWireMock({
+        @ConfigureWireMock(name = "inventory-service", port = 0)
+})
 class OrderServiceApplicationTests {
 
     @ServiceConnection
@@ -39,11 +46,14 @@ class OrderServiceApplicationTests {
     void shouldSubmitOrder() {
         String submitOrderJson = """
                 {
-                    "skuCode": "SKU-ABC-123",
-                    "quantity": 1,
-                    "price": 999.99
-                }
+                     "skuCode": "iphone_15",
+                     "quantity": 1,
+                     "price": 999.99
+                 }
                 """;
+
+
+        InventoryClientStub.stubInventoryCall("iphone_15", 1);
 
         OrderResponse response = RestAssured.given()
                 .contentType(ContentType.JSON)
