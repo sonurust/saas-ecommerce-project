@@ -1,5 +1,6 @@
 package com.skbhati.microservices.order.service;
 
+import com.skbhati.microservices.order.client.InventoryClient;
 import com.skbhati.microservices.order.dto.OrderRequest;
 import com.skbhati.microservices.order.dto.OrderResponse;
 import com.skbhati.microservices.order.entity.Order;
@@ -15,6 +16,7 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final InventoryClient inventoryClient;
 
     public OrderResponse getOrder(Long orderId) {
         return orderRepository
@@ -24,6 +26,9 @@ public class OrderService {
     }
 
     public OrderResponse placeOrder(OrderRequest order) {
+        var isProductInStock = inventoryClient.isInStock(order.skuCode(),  order.quantity());
+        if (isProductInStock) {
+
         Order orderEntity = Order.builder()
                 .orderNumber(UUID.randomUUID().toString())
                 .price(order.price())
@@ -39,6 +44,10 @@ public class OrderService {
                 newOrder.getQuantity(),
                 newOrder.getPrice()
         );
+        } else {
+            throw  new RuntimeException("Product not found");
+        }
+
     }
 
     public List<OrderResponse> getAllOrders() {

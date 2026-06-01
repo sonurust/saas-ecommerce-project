@@ -1,14 +1,22 @@
 package com.skbhati.microservices.inventory.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Table(name = "t_inventory")
 @Entity
+@Table(name = "t_inventory")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Inventory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String skuCode;
-    private int quantity;
+    private Integer quantity;
 }
