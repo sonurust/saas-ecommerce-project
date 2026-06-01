@@ -9,16 +9,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection; // ✅ add this
 import org.springframework.context.annotation.Import;
-import org.testcontainers.mysql.MySQLContainer;
-import org.testcontainers.shaded.org.hamcrest.Matchers;
+import org.testcontainers.containers.MySQLContainer;
 import org.wiremock.spring.ConfigureWireMock;
 import org.wiremock.spring.EnableWireMock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
+
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableWireMock({
@@ -26,8 +26,8 @@ import static org.hamcrest.Matchers.notNullValue;
 })
 class OrderServiceApplicationTests {
 
-    @ServiceConnection
-    static MySQLContainer mySQLContainer = new MySQLContainer("mysql:8.3.0");
+    @ServiceConnection  // ✅ now resolved
+    static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.3.0");
 
     @LocalServerPort
     private int port;
@@ -52,7 +52,6 @@ class OrderServiceApplicationTests {
                  }
                 """;
 
-
         InventoryClientStub.stubInventoryCall("iphone_15", 1);
 
         OrderResponse response = RestAssured.given()
@@ -67,7 +66,5 @@ class OrderServiceApplicationTests {
 
         assertThat(response.id(), notNullValue());
         assertThat(response.orderNumber(), notNullValue());
-
     }
-
 }
