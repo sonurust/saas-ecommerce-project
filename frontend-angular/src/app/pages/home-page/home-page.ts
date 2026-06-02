@@ -50,7 +50,7 @@ export class HomePage implements OnInit {
     this.router.navigateByUrl('/add-product');
   }
 
-  placeOrder(product: Product, quantity: number) {
+  placeOrder(product: Product, quantity: string | number) {
 
     this.oidcSecurityService.userData$.subscribe(({ userData }) => {
       const userDetails = {
@@ -66,10 +66,10 @@ export class HomePage implements OnInit {
       }
 
       const order: Order = {
-        skuCode: product.skuCode || 'iphone_15', // missing in the original code, added here
+        skuCode: product.skuCode,
         price: product.price,
         quantity: Number(quantity),
-        // userDetails: userDetails
+        userDetails: userDetails
       };
 
       this.orderService.placeOrder(order)
