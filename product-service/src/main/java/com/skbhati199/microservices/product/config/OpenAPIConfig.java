@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class OpenAPIConfig {
 
     @Bean
-    public OpenAPI productServiceOpenAPI() {
+    public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info().title("Product Service API")
                         .description("Product Service API")
