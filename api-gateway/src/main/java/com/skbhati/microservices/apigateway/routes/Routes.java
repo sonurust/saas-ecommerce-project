@@ -1,10 +1,14 @@
 package com.skbhati.microservices.apigateway.routes;
 
+import org.springframework.cloud.gateway.server.mvc.filter.CircuitBreakerFilterFunctions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.function.RequestPredicates;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.ServerResponse;
+
+import java.net.URI;
 
 import static org.springframework.cloud.gateway.server.mvc.filter.FilterFunctions.setPath;
 import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
@@ -19,6 +23,8 @@ public class Routes {
         return route("product_service")
                 .route(RequestPredicates.path("/api/product/**"), http())
                 .before(uri("http://localhost:8080"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("productServiceCircuitBreaker",
+                        URI.create("forward:/fallbackRoute")))
                 .build();
     }
 
@@ -27,6 +33,8 @@ public class Routes {
         return route("product_service_swagger")
                 .route(RequestPredicates.path("/aggregate/product-service/api-docs"), http())
                 .before(uri("http://localhost:8080"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("productServiceCircuitBreaker",
+                        URI.create("forward:/fallbackRoute")))
                 .filter(setPath("/api-docs"))
                 .build();
     }
@@ -36,6 +44,8 @@ public class Routes {
         return route("order_service")
                 .route(RequestPredicates.path("/api/order/**"), http())
                 .before(uri("http://localhost:8081"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("orderServiceCircuitBreaker",
+                        URI.create("forward:/fallbackRoute")))
                 .build();
     }
 
@@ -44,6 +54,8 @@ public class Routes {
         return route("order_service_swagger")
                 .route(RequestPredicates.path("/aggregate/order-service/api-docs"), http())
                 .before(uri("http://localhost:8081"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("orderServiceCircuitBreaker",
+                        URI.create("forward:/fallbackRoute")))
                 .filter(setPath("/api-docs"))
                 .build();
     }
@@ -53,6 +65,8 @@ public class Routes {
         return route("inventory_service")
                 .route(RequestPredicates.path("/api/inventory/**"), http())
                 .before(uri("http://localhost:8082"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("inventoryServiceCircuitBreaker",
+                        URI.create("forward:/fallbackRoute")))
                 .build();
     }
 
@@ -61,7 +75,18 @@ public class Routes {
         return route("inventory_service_swagger")
                 .route(RequestPredicates.path("/aggregate/inventory-service/api-docs"), http())
                 .before(uri("http://localhost:8082"))
+                .filter(CircuitBreakerFilterFunctions.circuitBreaker("inventoryServiceCircuitBreaker",
+                        URI.create("forward:/fallbackRoute")))
                 .filter(setPath("/api-docs"))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> fallbackRoute() {
+        return route("fallbackRoute")
+                .route(RequestPredicates.path("/fallbackRoute"), request ->
+                        ServerResponse.status(HttpStatus.SERVICE_UNAVAILABLE)
+                                .body("Service unavailable, please try again later"))
                 .build();
     }
 }
