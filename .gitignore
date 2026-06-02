@@ -34,3 +34,11 @@ build/
 
 # Docker mongodb volume
 /product-service/data
+/api-gateway/volume-data
+
+/**/node_modules/
+frontend-angular/dist
+.env
+frontend-angular/.angular
+*.iml
+*.log

@@ -1,0 +1,65 @@
+<main>
+    <div class="p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold mb-4">
+                Products ({{ products.length }})
+            </h1>
+
+            @if (isAuthenticated) {
+            <button (click)="goToCreateProductPage()"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Add Product
+            </button>
+            }
+        </div>
+
+        @if (orderSuccess) {
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            Order placed successfully!
+        </div>
+        }
+
+        @if (orderFailed) {
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            Failed to place order. Please try again.
+        </div>
+
+        @if (quantityIsNull) {
+        <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
+            Quantity must be greater than 0.
+        </div>
+        }
+        }
+
+        @if (products.length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+            @for (product of products; track $index) {
+            <div class="border rounded p-4 shadow">
+                <h2 class="text-xl font-semibold mb-2">{{ product.name }}</h2>
+                <p class="text-gray-700 mb-2">{{ product.description }}</p>
+                <p class="text-gray-900 font-bold mb-4">
+                    {{ '$' + product.price }}
+                </p>
+
+                @if (isAuthenticated) {
+                <div class="flex items-center">
+                    <span>
+                        Quantity: <input type="number" #quantityInput />
+                    </span>
+                    <button (click)="placeOrder(product, 1)"
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        Place Order
+                    </button>
+                </div>
+                }
+            </div>
+            }
+
+        </div>
+        } @else {
+        <p>No products available.</p>
+        }
+
+    </div>
+</main>
