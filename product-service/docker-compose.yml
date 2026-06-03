@@ -8,4 +8,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
       MONGO_INITDB_DATABASE: product-service
     volumes:
-      - ./data:/data/db
+      - product-mongo-data:/data/db
+
+volumes:
+  product-mongo-data:

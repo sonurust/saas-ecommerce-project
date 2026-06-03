@@ -2,7 +2,7 @@ services:
   keycloak-mysql:
     image: mysql:8
     volumes:
-      - ./volume-data/mysql_keycloak_data:/var/lib/mysql
+      - keycloak-mysql-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: keycloak
@@ -26,3 +26,6 @@ services:
       - ./docker/keycloak/reals/:/opt/keycloak/data/import
     depends_on:
       - keycloak-mysql
+
+volumes:
+  keycloak-mysql-data:
